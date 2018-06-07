@@ -80,7 +80,7 @@ static void init_crcdnp_tab( void ) {
 
 } 
 
-static bool             crc_tab32_init          = false;
+static bool            crc_tab32_init = false;
 static uint32_t        crc_tab32[256];
 
 static void init_crc32_tab( void ) {
@@ -135,6 +135,7 @@ uint32_t crc32( const unsigned char *input_str, size_t num_bytes ) {
 } 
 
 //**1**
+//crc DNP
 uint16_t crc_dnp( const unsigned char *input_str, size_t num_bytes ) {
 
     uint16_t crc;
@@ -168,7 +169,7 @@ uint16_t crc_dnp( const unsigned char *input_str, size_t num_bytes ) {
 
 }
  
-//KERMIT
+//crc KERMIT
 //**1**
  uint16_t crc_kermit( const unsigned char *input_str, size_t num_bytes ) {
 
@@ -202,7 +203,7 @@ uint16_t crc_dnp( const unsigned char *input_str, size_t num_bytes ) {
 
 }
  
-//SICK
+//crc SICK
 uint16_t crc_sick( const unsigned char *input_str, size_t num_bytes ) {
 
     uint16_t crc;
@@ -238,7 +239,7 @@ uint16_t crc_sick( const unsigned char *input_str, size_t num_bytes ) {
 
 } 
 
-// Dallas 
+// Dallas-crc16 
 uint16_t crc16( uint8_t const *data, int len){
      uint16_t crc=0;
      
@@ -258,7 +259,7 @@ uint16_t crc16( uint8_t const *data, int len){
      return crc;
 }
 
-//Maxim 
+//Maxim-crc8 
 uint8_t crc8( uint8_t const *addr, int len){
      uint8_t crc=0;
 
@@ -631,7 +632,7 @@ int tests() {
                 if (strcmp(kod, "[crc8]") == 0){
                     s8 = crc8(buff, size8);
                     if(s8 != kontrolnySucet) {
-                        printf("Error in crc8 at %s. Result was 0x%x, expected 0x%x.\n",buff,s8,kontrolnySucet);
+                        printf("Error in Maxim-crc8 at %s. Result was 0x%x, expected 0x%x.\n",buff,s8,kontrolnySucet);
                         errors++;
                     }
                 }
@@ -639,7 +640,7 @@ int tests() {
                 if (strcmp(kod, "[crc16]") == 0){
                     s16 = crc16(buff, size8);
                     if(s16 != kontrolnySucet) {
-                        printf("Error in crc16 at %s. Result was 0x%x, expected 0x%x.\n",buff,s16,kontrolnySucet);
+                        printf("Error in Dallas-crc16 at %s. Result was 0x%x, expected 0x%x.\n",buff,s16,kontrolnySucet);
                         errors++;
                     }
                 }    
@@ -656,7 +657,7 @@ int tests() {
                 if (strcmp(kod, "[crc_sick]") == 0){
                     s16 = crc_sick(buff, size8); 
                     if(s16 != kontrolnySucet) {
-                        printf("Error in crc_sick at %s. Result was 0x%x, expected 0x%x.\n",buff,s16,kontrolnySucet);
+                        printf("Error in crc SICK at %s. Result was 0x%x, expected 0x%x.\n",buff,s16,kontrolnySucet);
                         errors++;
                     }
 
@@ -665,7 +666,7 @@ int tests() {
                 if (strcmp(kod, "[crc_kermit]") == 0){
                     s16 = crc_kermit(buff, size8); 
                     if(s16 != kontrolnySucet) {
-                        printf("Error in crc_kermit at %s. Result was 0x%x, expected 0x%x.\n",buff,s16,kontrolnySucet);
+                        printf("Error in crc KERMIT at %s. Result was 0x%x, expected 0x%x.\n",buff,s16,kontrolnySucet);
                         errors++;
                     }
                 }
@@ -673,7 +674,7 @@ int tests() {
                 if (strcmp(kod, "[crc_dnp]") == 0){            
                     s16 = crc_dnp(buff, size8); 
                     if(s16 != kontrolnySucet) {
-                        printf("Error in crc_dnp at %s. Result was 0x%x, expected 0x%x.\n",buff,s16,kontrolnySucet);
+                        printf("Error in crc DNP at %s. Result was 0x%x, expected 0x%x.\n",buff,s16,kontrolnySucet);
                         errors++;
                     }
                 }    
@@ -756,13 +757,13 @@ void find_method(int kontrolnySucet, char const *const filename) {
 
     s8 = crc8(buff, size8);
     if(s8 == kontrolnySucet) {
-        printf("Maybe crc8 was used.\n");
+        printf("Maybe Maxim-crc8 was used.\n");
         found++;
     }
 
     s16 = crc16(buff, size8);
     if(s16 == kontrolnySucet) {
-        printf("Maybe crc16 was used.\n");
+        printf("Maybe Dallas-crc16 was used.\n");
         found++;
     }
 
@@ -774,19 +775,19 @@ void find_method(int kontrolnySucet, char const *const filename) {
 
     s16 = crc_sick(buff, size8); 
     if(s16 == kontrolnySucet) {
-        printf("Maybe crc_sick was used.\n");
+        printf("Maybe crc SICK was used.\n");
         found++;
     }
 
     s16 = crc_kermit(buff, size8); 
     if(s16 == kontrolnySucet) {
-        printf("Maybe crc_kermit was used.\n");
+        printf("Maybe crc KERMIT was used.\n");
         found++;
     }
 
     s16 = crc_dnp(buff, size8); 
     if(s16 == kontrolnySucet) {
-        printf("Maybe crc_dnp was used.\n");
+        printf("Maybe crc DNP was used.\n");
         found++;
     }
 
@@ -802,7 +803,6 @@ struct arg_file *file;
 struct arg_end *end;
 
 int main(int argc, char *argv[]) {
-    /* the global arg_xxx structs are initialised within the argtable */
     void *argtable[] = {
             help = arg_litn(NULL, "help", 0, 1, "display this help and exit"),
             all = arg_litn("a", "all", 0, 1, "calculate all types of checksums implemented for input file"),
@@ -817,7 +817,6 @@ int main(int argc, char *argv[]) {
 
     int exitcode = EXIT_SUCCESS;
 
-    /* special case: '--help' takes precedence over error reporting */
     if (help->count > 0) {
         printf("Usage: %s", progname);
         arg_print_syntax(stdout, argtable, "\n");
@@ -827,10 +826,10 @@ int main(int argc, char *argv[]) {
     }
 
     if(test->count > 0) {
-        printf("\nTesting.\n\n");
+        printf("Testing.\n");
         int x = tests();
         if(x==0){
-            printf("Test successful\n\n");
+            printf("Test successful\n");
         } else {
             printf("Test ended with %d errors\n", x);
             exitcode = EXIT_FAILURE;
@@ -838,9 +837,7 @@ int main(int argc, char *argv[]) {
         goto exit;
     }
 
-    /* If the parser returned any errors then display them and exit */
     if (nerrors > 0) {
-        /* Display the error details contained in the arg_end struct.*/
         arg_print_errors(stdout, end, progname);
         printf("Try '%s --help' for more information.\n", progname);
         exitcode = EXIT_FAILURE;
@@ -869,7 +866,6 @@ int main(int argc, char *argv[]) {
             goto exit;
         }
         
-        printf("%d\n", *val->ival);
         find_method(*val->ival, *file->filename);
         goto exit;
     }
@@ -878,7 +874,6 @@ int main(int argc, char *argv[]) {
     exitcode = EXIT_FAILURE;
     
     exit:
-    /* deallocate each non-null entry in argtable[] */
     arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
     return exitcode;
 }
